@@ -12,11 +12,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
         gtag("event", "click", {
             "event_category": "engagement",
-            "event_label": "label"
+            "event_label": "initial-click"
         });
     });
-
-    //window.bt = bt;
 
 });
 
