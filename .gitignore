@@ -1,2 +1,9 @@
 *.DS_Store
 .idea
+bin
+drivers
+include
+lib
+*.log
+*.pyc
+selenium
