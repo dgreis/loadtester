@@ -1,4 +1,3 @@
-from user import User
 
 class Action:
 
