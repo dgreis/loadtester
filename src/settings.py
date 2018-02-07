@@ -1,6 +1,6 @@
 #Settings for GA Test Simulation
 
-N = 10
+N = 500
 URL = "http://127.0.0.1:8888"
 
 LOGGING_FORMAT = "%(asctime)-15s, %(message)s"

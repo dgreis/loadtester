@@ -1,7 +1,7 @@
 import logging
 import time
 
-from settings import N, URL, LOGGING_FORMAT
+from settings import N, LOGGING_FORMAT
 from user import User
 from experiments.click_button import Click_Button
 from experiments.funnel_test import Wait_For_Pic, Possibly_Bounce, Click_Add_To_Cart, Wait_To_Claim_Gift, Claim_Gift

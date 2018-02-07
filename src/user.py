@@ -1,10 +1,9 @@
-import time
 import logging
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.common.exceptions import WebDriverException
-from settings import URL, variant_list, variant_click_thresholds
+from settings import URL, variant_list
 
 
 def ajax_complete(driver):
