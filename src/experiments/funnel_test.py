@@ -1,5 +1,5 @@
 from action import Action
-from settings import variant_bounce_thresholds
+from settings import variant_bounce_thresholds, TLD
 
 from random import uniform
 from selenium.webdriver.common.by import By
@@ -19,9 +19,14 @@ class Wait_For_Pic(Action):
 
     def _proc(self):
         driver = self.user.webdriver
+        self.user.append_to_history(driver.current_url)
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located((By.ID, "default_image"))
         )
+        try:
+            assert self.user.webdriver.current_url == TLD + '/' + 'conversion.html'
+        except:
+            pass
 
 
 class Possibly_Bounce(Action):
@@ -34,6 +39,7 @@ class Possibly_Bounce(Action):
             pass
 
     def _proc(self):
+        assert self.user.webdriver.current_url == TLD + '/' + 'conversion.html'
         trtmt = self.user.trtmt
         prob = uniform(0, 1)
         thresh = variant_bounce_thresholds[trtmt]
@@ -69,9 +75,14 @@ class Wait_To_Claim_Gift(Action):
 
     def _proc(self):
         driver = self.user.webdriver
+        self.user.append_to_history(driver.current_url)
+        try:
+            assert driver.current_url.split('?')[0] == TLD + '/' + 'thankyou.html'
+        except:
+            pass
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, "thankyou"))
-        )
+            )
 
 
 class Claim_Gift(Action):

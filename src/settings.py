@@ -1,7 +1,7 @@
 #Settings for GA Test Simulation
 
 N = 500
-URL = "http://127.0.0.1:8888"
+TLD = "http://127.0.0.1:8888"
 
 LOGGING_FORMAT = "%(asctime)-15s, %(message)s"
 
