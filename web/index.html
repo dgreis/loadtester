@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="javascript/ga.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script src="//www.google-analytics.com/cx/api.js?experiment=So2UWJ0CTUeEcOykQIQ8-Q"></script>
+    <script src="//www.google-analytics.com/cx/api.js?experiment=C1dASY0SS6WNdgJoNpAJlQ"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
 	<script src="javascript/ytalert.js"></script>
 </head>
@@ -32,7 +32,11 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'UA-109607513-1', { 'send_page_view': true });
+      gtag('config', 'UA-109607513-1', { 'send_page_view': true,
+                                         'custom_map': { 'dimension1': 'init_conversion'}});
+      gtag('event', 'init_conversion_tracking',
+        {'init_conversion': 'false'});
+        });
     </script>
 <body>
     <!-- Google Tag Manager (noscript) -->
