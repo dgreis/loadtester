@@ -7,13 +7,7 @@ class Action(object):
         if self.user.log['bounced'] == 1:
             pass
         else:
-            #try:
-                self._proc()
-            #except (NoSuchElementException, TimeoutException, AssertionError) as e:
-            #except Exception as e:
-            #    template = "An exception of type {0} occurred."
-            #    message = template.format(type(e).__name__)
-            #    print message
+            self._proc()
         self._check_console_for_errors(self.user.webdriver)
 
 

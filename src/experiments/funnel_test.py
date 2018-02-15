@@ -13,11 +13,6 @@ class Wait_For_Pic(Action):
 
     def __init__(self,user):
         Action.__init__(self,user)
-        #if self.user.log['bounced'] == 1:
-        #    pass
-        #else:
-        #    self._proc()
-
 
     def _proc(self):
         driver = self.user.webdriver
@@ -38,11 +33,6 @@ class Possibly_Bounce(Action):
     def __init__(self,user):
         Action.__init__(self,user)
 
-        #if self.user.log['bounced'] == 0:
-        #    self._proc()
-        #else:
-        #    pass
-
     def _proc(self):
         assert self.user.webdriver.current_url == TLD + '/' + 'conversion.html'
         trtmt = self.user.trtmt
@@ -59,11 +49,6 @@ class Click_Add_To_Cart(Action):
 
     def __init__(self,user):
         Action.__init__(self,user)
-        #self.user.log['added_to_cart'] = 0
-        #if self.user.log['bounced'] == 1:
-        #    pass
-        #else:
-        #    self._proc()
 
     def _record_log_values(self):
         self.user.log['added_to_cart'] = 0
@@ -80,10 +65,6 @@ class Wait_To_Claim_Gift(Action):
 
     def __init__(self,user):
         Action.__init__(self,user)
-        #if self.user.log['bounced'] == 1:
-        #    pass
-        #else:
-        #    self._proc()
 
     def _proc(self):
         driver = self.user.webdriver
@@ -103,11 +84,6 @@ class Claim_Gift(Action):
 
     def __init__(self,user):
         Action.__init__(self,user)
-        #self.user.log['claimed_gift'] = 0
-        #if self.user.log['bounced'] == 1:
-        #    pass
-        #else:
-        #    self._proc()
 
     def _record_log_values(self):
         self.user.log['claimed_gift'] = 0

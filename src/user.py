@@ -18,9 +18,6 @@ class User:
         self.browser_history = list()
 
 
-        #self._navigate_to_landing_page(TLD)
-        #self._det_trtmt()
-
     def do(self,action):
         action(self)
 

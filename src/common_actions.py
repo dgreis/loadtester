@@ -23,8 +23,6 @@ class Navigate_To_Landing_Page(Action):
         url = self.user.landing_page
         driver.get(url)
         WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
-        # print("jQuery.active: " + str(driver.execute_script("return jQuery.active")))
-        #WebDriverWait.until(EC.)
         self.user.append_to_history(url)
 
 class Determine_Treatment(Action):
