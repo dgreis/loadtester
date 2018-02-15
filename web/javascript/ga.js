@@ -16,9 +16,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         });
 
         // Sends the custom dimension to Google Analytics.
-        gtag('event', 'init_conversion_tracking',
-            {'init_conversion': 'true'});
+        gtag('event', 'init_conversion_tracking', {
+            'init_conversion': 'true'
         });
+    });
 });
-
-  //})();
