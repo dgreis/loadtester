@@ -1,9 +1,13 @@
+import signal
+
 from random import uniform
 
 from action import Action
 from settings import variant_click_thresholds
 
 class Click_Button(Action):
+
+    name = "Click Button"
 
     def __init__(self,user):
         Action.__init__(self,user)
@@ -20,9 +24,18 @@ class Click_Button(Action):
         thresh = variant_click_thresholds[trtmt]
         if prob <= thresh:
             button_element = self.user.webdriver.find_element_by_id("mybutton")
-            button_element.click()
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(10)
+            try:
+                button_element.click()
+            except Exception:
+                print "click timeout"
+            signal.alarm(0)
             self.user.log['click_button'] = 1
         else:
             self.user.log['bounced'] = 1
 
 
+def handler(signum, frame):
+    print "Forever is over!"
+    raise Exception("end of time")

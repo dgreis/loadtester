@@ -9,6 +9,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class Wait_For_Pic(Action):
 
+    name = "Wait For Pic"
+
     def __init__(self,user):
         Action.__init__(self,user)
         #if self.user.log['bounced'] == 1:
@@ -31,8 +33,11 @@ class Wait_For_Pic(Action):
 
 class Possibly_Bounce(Action):
 
+    name = "Possibly Bounce"
+
     def __init__(self,user):
         Action.__init__(self,user)
+
         #if self.user.log['bounced'] == 0:
         #    self._proc()
         #else:
@@ -49,6 +54,8 @@ class Possibly_Bounce(Action):
             pass
 
 class Click_Add_To_Cart(Action):
+
+    name = "Click Add To Cart"
 
     def __init__(self,user):
         Action.__init__(self,user)
@@ -68,6 +75,8 @@ class Click_Add_To_Cart(Action):
 
 
 class Wait_To_Claim_Gift(Action):
+
+    name = "Wait To Claim Gift"
 
     def __init__(self,user):
         Action.__init__(self,user)
@@ -89,6 +98,8 @@ class Wait_To_Claim_Gift(Action):
 
 
 class Claim_Gift(Action):
+
+    name = "Claim Gift"
 
     def __init__(self,user):
         Action.__init__(self,user)
