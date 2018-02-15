@@ -19,6 +19,7 @@ class User:
         self.webdriver = webdriver.Chrome()
         self.trtmt = None
         self.log = dict()
+        self.log['bounced'] = 0
         self.browser_history = list()
 
 

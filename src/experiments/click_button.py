@@ -7,10 +7,11 @@ class Click_Button(Action):
 
     def __init__(self,user):
         Action.__init__(self,user)
-        self.user.log['click_button'] = 0
-        self.user.log['bounced'] = 0
-        self._proc()
+        #self.user.log['click_button'] = 0
+        #self._proc()
 
+    def _record_log_values(self):
+        self.user.log['click_button'] = 0
 
     def _proc(self):
         trtmt = self.user.trtmt
