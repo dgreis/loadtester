@@ -11,7 +11,7 @@ from experiments.funnel_test import Wait_For_Pic, Possibly_Bounce, Click_Add_To_
 logging.basicConfig(filename='experiment.log',
                     level=logging.INFO,
                     format=LOGGING_FORMAT,
-                    filemode='w',
+                    #filemode='w',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 
 #experiment = [Navigate_To_Landing_Page, Determine_Treatment, Click_Button]
