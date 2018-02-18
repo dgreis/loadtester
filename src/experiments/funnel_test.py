@@ -1,3 +1,5 @@
+import time
+
 from action import Action
 from settings import variant_bounce_thresholds, TLD
 
@@ -102,6 +104,7 @@ class Claim_Gift(Action):
     def _proc(self):
         button_element = self.user.webdriver.find_element_by_id("thankyou")
         button_element.click()
+        time.sleep(0.5)
         self.user.log['claimed_gift'] = 1
 
 
