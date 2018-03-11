@@ -2,8 +2,8 @@ import signal
 
 from random import uniform
 
-from action import Action
-from settings import variant_click_thresholds
+from src.flows.action import Action
+from src.flows.click_button.settings import variant_click_thresholds
 
 class Click_Button(Action):
 

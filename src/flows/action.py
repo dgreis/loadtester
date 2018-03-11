@@ -21,7 +21,8 @@ class Action(object):
         brow_log = driver.get_log('browser')
         for m in brow_log:
             if 'SyntaxError' in m['message']:
-                raise JavaSyntaxException
+                #raise JavaSyntaxException
+                pass
 
 
 class JavaSyntaxException(Exception):

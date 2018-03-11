@@ -1,6 +1,6 @@
 import time
 
-from action import Action
+from src.flows.action import Action
 from settings import variant_bounce_thresholds, TLD
 
 from random import uniform

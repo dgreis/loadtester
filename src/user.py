@@ -1,7 +1,10 @@
 import logging
+import sys
 
 from selenium import webdriver
-from settings import TLD, variant_list
+from global_settings import FLOW, REPO_LOC
+sys.path.append(REPO_LOC + '/src/flows/' + FLOW)
+from settings import *
 
 class User:
 

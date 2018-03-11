@@ -1,0 +1,6 @@
+
+TLD = "http://localhost:3000"
+
+SHOP_SIZE = 23
+BASKETSIZE_LAMBDA = 3
+PREFSHAPEPARAMS = { 'ALPHA' : 2.03, 'BETA': 4.67 }

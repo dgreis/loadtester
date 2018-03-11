@@ -1,7 +1,9 @@
-from action import Action
-from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.common.exceptions import WebDriverException
-from settings import variant_list, GA_TRACKING_ID
+from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+
+from src.flows.action import Action
+from src.global_settings import GA_TRACKING_ID
+
 
 def ajax_complete(driver):
     try:
@@ -34,7 +36,7 @@ class Determine_Treatment(Action):
 
     def _proc(self):
         driver = self.user.webdriver
-        driver.execute_script('var expVar = gaData[' + '"' + GA_TRACKING_ID + '"' + ']["experiments"];\
+        driver.execute_script('var expVar = gaData[' + '"' + GA_TRACKING_ID + '"' + ']["flows"];\
                                var trtmt = expVar[Object.keys(expVar)[0]];\
                                window.trtmt = trtmt;')
         var_idx = int(driver.execute_script('return trtmt;'))
