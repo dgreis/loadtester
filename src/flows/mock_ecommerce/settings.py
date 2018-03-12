@@ -1,6 +1,9 @@
 
-TLD = "http://localhost:3000"
+TLD = "http://localhost:3000/pre"
 
 SHOP_SIZE = 23
 BASKETSIZE_LAMBDA = 3
 PREFSHAPEPARAMS = { 'ALPHA' : 2.03, 'BETA': 4.67 }
+
+CAMPAIGN_PROP = 0.2
+CAMPAIGN_BOUNCE_PROB = 0.4
