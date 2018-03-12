@@ -1,4 +1,6 @@
 import math
+import time
+import numpy as np
 from pymongo import MongoClient
 
 from src.flows.action import Action
@@ -14,10 +16,21 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class Empty_Cart(Action):
-    client = MongoClient()
-    db = client.mongomart
-    result = db.cart.delete_many({})
-    assert db.cart.count() == 0
+
+    name = "Empty Cart"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _record_log_values(self):
+        self.user.log['empty_cart_start'] = 0
+
+    def _proc(self):
+        client = MongoClient()
+        db = client.mongomart
+        result = db.cart.delete_many({})
+        assert db.cart.count() == 0
+        self.user.log['empty_cart_start'] = 1
 
 class Select_Items(Action):
 
@@ -38,7 +51,7 @@ class Select_Items(Action):
             self.user.log['bounced'] = 1
         else:
             ALPHA,BETA = PREFSHAPEPARAMS['ALPHA'],PREFSHAPEPARAMS['BETA']
-            item_ids = [int(math.floor(x)) for x in list(beta.rvs(ALPHA, BETA, size=num_items)*SHOP_SIZE)]
+            item_ids = [int(math.floor(x)) + 1 for x in list(beta.rvs(ALPHA, BETA, size=num_items)*SHOP_SIZE)]
             self.user.log['items_chosen'] = item_ids
             self.user.item_ids = item_ids
 
@@ -64,7 +77,7 @@ class Add_Items_To_Cart(Action):
                 page_num = 1
                 while True:
                     try:
-                        print "Looking for item: " + str(item_id)
+                        #print "Looking for item: " + str(item_id)
                         prod_btn_element = driver.find_element_by_xpath('//a[@href="/item/' + str(int(item_id)) + '"]')
                     except NoSuchElementException:
                         next_pg_btn = driver.find_element_by_xpath('//a[@href="/?page=' + str(page_num) + '&category=All"]')
@@ -112,6 +125,77 @@ class elements_have_css_class(object):
     #    return False
     return elements
 
-    #Proceed_To_Checkout
-    #Execute_Purchase
-    #Leave_After_Confirmation
+class Proceed_To_Checkout(Action):
+
+    name = "Proceed To Checkout"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _record_log_values(self):
+        self.user.log['checked_out'] = 0
+
+    def _proc(self):
+        driver = self.user.webdriver
+        btn_success_element = driver.find_element_by_xpath('//a[@href="/cart"]')
+        btn_success_element.click()
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH,'''//*[text() = 'Proceed to Checkout']''')) #Should follow this
+        )
+        self._assert_correct_cart()
+        checkout_btn = driver.find_element_by_xpath('''//*[text() = 'Proceed to Checkout']''')
+        checkout_btn.click()
+
+    def _assert_correct_cart(self):
+        target_items = self.user.item_ids
+        client = MongoClient()
+        db = client.mongomart
+        cart_items = []
+        cart = list(db.cart.find())[0]['items']
+        for dict in cart:
+            cart_items.append(np.repeat(dict['_id'],dict['quantity']).tolist())
+        flat_cart_items = [item for sublist in cart_items for item in sublist]
+        assert str(sorted(target_items)) == str(sorted(flat_cart_items))
+
+
+class Execute_Purchase(Action):
+
+    name = "Execute Purchase"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _record_log_values(self):
+        self.user.log['purchase_executed'] = 0
+
+    def _proc(self):
+        driver = self.user.webdriver
+        assert 'checkout' in driver.current_url
+        card_number = driver.find_element_by_id('card-number')
+        card_number.send_keys('2314 2414 2325 2345')
+        card_holder = driver.find_element_by_id('card-holder')
+        card_holder.send_keys("John Doe")
+        card_month = driver.find_element_by_id('card-month')
+        card_month.send_keys('02')
+        card_year = driver.find_element_by_id('card-year')
+        card_year.send_keys('19')
+        card_cvc = driver.find_element_by_id('card-cvc')
+        card_cvc.send_keys('343')
+        card_btn = driver.find_element_by_id('card-btn')
+        card_btn.click()
+        self.user.log['purchase_executed'] = 1
+        time.sleep(1)
+
+class Leave_After_Confirmation(Action):
+
+    name = "Leave After Confirmation"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH,'//a[@href="https://bootstrapcreative.com/"]'))
+        )
+        assert 'confirmation' in driver.current_url
