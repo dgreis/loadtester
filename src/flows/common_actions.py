@@ -2,7 +2,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 
 from src.flows.action import Action
-from src.global_settings import GA_TRACKING_ID
+#from src.global_settings import GA_TRACKING_ID
 
 
 def ajax_complete(driver):

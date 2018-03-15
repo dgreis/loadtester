@@ -31,12 +31,13 @@ class Navigate_To_Landing_Page(Action):
         driver = self.user.webdriver
         url = self.user.landing_page
         driver.get(url)
-        #WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
         self.user.append_to_history(url)
         in_campaign = uniform.rvs(size=1)[0]
         if in_campaign < CAMPAIGN_PROP:
             camp_btn = driver.find_element_by_xpath('''//*[text() = 'Click Here For Campaign']''')
             camp_btn.click()
+            #WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
+            time.sleep(1)
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, '''//*[text() = 'MongoMart']'''))  # Should follow this
             )
