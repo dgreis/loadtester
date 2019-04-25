@@ -1,8 +1,8 @@
 #Settings for GA Test Simulation
 
 N = 500
-TLD = "http://localhost.domain:8888"
-GA_TRACKING_ID = "UA-109607513-1"
+TLD = "http://localhost:8888/wordpress/shop/"
+GA_TRACKING_ID = "UA-109607513-3"
 
 LOGGING_FORMAT = "time:%(asctime)-15s, %(message)s"
 

@@ -1,6 +1,7 @@
 import logging
 
 from selenium import webdriver
+import chromedriver_binary
 from settings import TLD, variant_list
 
 class User:
