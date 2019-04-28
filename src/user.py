@@ -2,7 +2,7 @@ import logging
 
 from selenium import webdriver
 import chromedriver_binary
-from settings import TLD, variant_list
+from settings import SETTINGS
 
 class User:
 
@@ -10,7 +10,7 @@ class User:
         self.user_id = user_id
         self.webdriver = webdriver.Chrome()
         self.webdriver.implicitly_wait(0)
-        self.landing_page = TLD
+        self.landing_page = SETTINGS['TLD']
         self.trtmt = None
         self.log = dict()
         self.log['bounced'] = 0
@@ -19,8 +19,8 @@ class User:
         self.browser_history = list()
 
 
-    def do(self,action):
-        action(self)
+    def do(self,action,**kwargs):
+        action(self,**kwargs)
 
     def output_log(self):
         str_builder = ''

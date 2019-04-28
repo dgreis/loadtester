@@ -1,35 +1,30 @@
 import logging
 import time
 
-from settings import N, LOGGING_FORMAT
+from settings import SETTINGS
+from utils import init_settings, load_flow
 from user import User
-from action import JavaSyntaxException
-from common_actions import Navigate_To_Landing_Page, Determine_Treatment
-from experiments.click_button import Click_Button
-from experiments.funnel_test import Wait_For_Pic, Possibly_Bounce, Click_Add_To_Cart, Wait_To_Claim_Gift, Claim_Gift
+from src.actions.action import JavaSyntaxException
 
+init_settings()
+
+LOGGING_FORMAT = SETTINGS['LOGGING_FORMAT']
 logging.basicConfig(filename='experiment.log',
                     level=logging.INFO,
                     format=LOGGING_FORMAT,
                     #filemode='w',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 
-#experiment = [Navigate_To_Landing_Page, Determine_Treatment, Click_Button]
-experiment = [Navigate_To_Landing_Page,
-              Determine_Treatment,
-              Click_Button,
-              Wait_For_Pic,
-              Possibly_Bounce,
-              Click_Add_To_Cart,
-              Wait_To_Claim_Gift,
-              Claim_Gift]
 
 
 def main():
     t0 = time.time()
+    FLOW_NAME = SETTINGS['FLOW_NAME']
+    flow = load_flow(FLOW_NAME)
+    N = SETTINGS['N']
     for i in range(N):
         user = User(user_id = i)
-        for action in experiment:
+        for action in flow:
             try:
                 user.do(action)
             except Exception as e:
