@@ -24,7 +24,8 @@ def main():
     N = SETTINGS['N']
     TEST = SETTINGS['TEST']
     for i in range(N):
-        user = User(user_id = i)
+        user_kwargs =  {k: v for k, v in SETTINGS.items() if k.startswith('USER')}
+        user = User(user_id = i, **user_kwargs)
         for action in flow:
             if not TEST:
                 try:

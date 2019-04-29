@@ -2,6 +2,9 @@ TLD = "http://localhost:8888/wordpress/shop/"
 GA_TRACKING_ID = "UA-109607513-3"
 TEST = True
 
+EXPERIMENT_ACTIVE = False
+EXPERIMENT_NAME = 'hidden_coupon'
+
 DBC_DATABASE = 'wordpress'
 DBC_UNIX_SOCKET = '/Applications/MAMP/tmp/mysql/mysql.sock'
 

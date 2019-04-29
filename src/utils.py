@@ -11,7 +11,13 @@ def init_settings():
             SETTINGS[k] = v
         else:
             pass
-    pass
+    if SETTINGS['EXPERIMENT_ACTIVE']:
+        EXPERIMENT_NAME = SETTINGS['EXPERIMENT_NAME']
+        experiment_settings_loc = 'src.experiments.' + EXPERIMENT_NAME
+        experiment_settings_mod = importlib.import_module(experiment_settings_loc)
+        SETTINGS['USER_EXPERIMENT_SETTINGS'] = getattr(experiment_settings_mod, 'USER_EXPERIMENT_SETTINGS')
+    else:
+        SETTINGS['USER_EXPERIMENT_SETTINGS'] = dict()
 
 def load_flow(FLOW_NAME):
     flow_module = importlib.import_module('src.flows.' + FLOW_NAME + '.flow')

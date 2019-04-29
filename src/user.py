@@ -6,11 +6,12 @@ from settings import SETTINGS
 
 class User:
 
-    def __init__(self,user_id):
+    def __init__(self,user_id, USER_EXPERIMENT_SETTINGS=None):
         self.user_id = user_id
         self.webdriver = webdriver.Chrome()
         self.webdriver.implicitly_wait(0)
         self.landing_page = SETTINGS['TLD']
+        self.USER_EXPERIMENT_SETTINGS = USER_EXPERIMENT_SETTINGS
         self.trtmt = None
         self.log = dict()
         self.log['bounced'] = 0

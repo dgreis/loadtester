@@ -5,9 +5,11 @@ from utils import get_args
 
 from scipy.stats import poisson
 from scipy.stats import beta
+from numpy.random import uniform
 
 import math
 import time
+import importlib
 
 from settings import SETTINGS
 from selenium.webdriver.common.by import By
@@ -152,6 +154,50 @@ class Possibly_Redeem_Coupon(Action):
     name = "Possibly Redeem Coupon"
 
     def __init__(self, user):
+        default_action_route = "Redeem Coupon"
+        #user_override code here
+        if SETTINGS['EXPERIMENT_ACTIVE']:
+            USER_EXPERIMENT_SETTINGS = user.USER_EXPERIMENT_SETTINGS
+            user.trtmt = 'Variant_A' #TODO: implement variant finding code
+            variant_info = USER_EXPERIMENT_SETTINGS[user.trtmt]
+            self.action_route = self._det_action(variant_info)
+        else:
+            self.action_route = default_action_route
+        Action.__init__(self, user)
+
+    def _det_action(self, variant_info):
+        cum = 0
+        unif_rv = uniform()
+        for k in variant_info:
+            while unif_rv > cum:
+                cum = cum + variant_info[k]
+            break
+        return k
+
+    def _proc(self):
+        #TODO: Possibly sub-class Action with Router?
+        action_route = self.action_route
+        action_class_name = action_route.replace(' ', '_')
+        ecommerce_module = importlib.import_module('src.actions.ecommerce')
+        Action_Class = getattr(ecommerce_module,action_class_name)
+        user = self.user
+        user.do(Action_Class)
+
+class Miss_Coupon(Action):
+
+    name = "Miss Coupon"
+
+    def __init__(self,user):
+         Action.__init__(self,user)
+
+    def _proc(self):
+        pass
+
+class Redeem_Coupon(Action):
+
+    name = "Redeem Coupon"
+
+    def __init__(self, user):
         Action.__init__(self, user)
 
     def _proc(self):
@@ -167,6 +213,25 @@ class Possibly_Redeem_Coupon(Action):
         ).click()
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-message'))
+        )
+
+class Mess_Up_Coupon(Action):
+
+    name = "Mess Up Coupon"
+
+    def __init(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.NAME, 'coupon_code'))
+        ).send_keys('notacoupon')
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.ID, 'apply_coupon_button'))
+        ).click()
+        WebDriverWait(driver,10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-error'))
         )
 
 class Proceed_To_Checkout(Action):
