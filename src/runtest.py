@@ -22,18 +22,22 @@ def main():
     FLOW_NAME = SETTINGS['FLOW_NAME']
     flow = load_flow(FLOW_NAME)
     N = SETTINGS['N']
+    TEST = SETTINGS['TEST']
     for i in range(N):
         user = User(user_id = i)
         for action in flow:
-            try:
+            if not TEST:
+                try:
+                    user.do(action)
+                except Exception as e:
+                    exception_class = type(e).__name__
+                    if exception_class == "JavaSyntaxException":
+                        raise JavaSyntaxException
+                    user.log['exception'] = exception_class
+                    user.log['stop_step'] = action.name
+                    break
+            else:
                 user.do(action)
-            except Exception as e:
-                exception_class = type(e).__name__
-                if exception_class == "JavaSyntaxException":
-                    raise JavaSyntaxException
-                user.log['exception'] = exception_class
-                user.log['stop_step'] = action.name
-                break
         user.quit()
         user.output_log()
         if (i+1) % 5 == 0:
