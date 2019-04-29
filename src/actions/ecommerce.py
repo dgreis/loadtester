@@ -134,6 +134,41 @@ class View_And_Add_Products_To_Cart(Action):
                 kwargs = dict([(k,locals()[k]) for k in additional_args])
                 user.do(sub_action, **kwargs)
 
+class View_Cart(Action):
+
+    name = "View Cart"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, 'Cart'))
+        ).click()
+
+class Possibly_Redeem_Coupon(Action):
+
+    name = "Possibly Redeem Coupon"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        hidden_coupon = WebDriverWait(driver,10).until(
+            EC.presence_of_element_located((By.ID, "hidden-coupon"))
+        ).text
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.NAME, 'coupon_code'))
+        ).send_keys(hidden_coupon)
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.ID, 'apply_coupon_button'))
+        ).click()
+        WebDriverWait(driver,10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-message'))
+        )
+
 class Proceed_To_Checkout(Action):
 
     name = "Proceed To Checkout"
