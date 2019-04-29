@@ -158,8 +158,13 @@ class Possibly_Redeem_Coupon(Action):
         #user_override code here
         if SETTINGS['EXPERIMENT_ACTIVE']:
             USER_EXPERIMENT_SETTINGS = user.USER_EXPERIMENT_SETTINGS
-            user.trtmt = 'Variant_A' #TODO: implement variant finding code
-            variant_info = USER_EXPERIMENT_SETTINGS[user.trtmt]
+            driver = user.webdriver
+            driver.execute_script('var expVar = gaData[' + '"' + SETTINGS['GA_TRACKING_ID'] + '"' + ']["experiments"];\
+                                   var trtmt = expVar[Object.keys(expVar)[0]];\
+                                   window.trtmt = trtmt;')
+            var_idx = int(driver.execute_script('return trtmt;'))
+            variant_name = USER_EXPERIMENT_SETTINGS.keys()[var_idx]
+            variant_info = USER_EXPERIMENT_SETTINGS[variant_name]
             self.action_route = self._det_action(variant_info)
         else:
             self.action_route = default_action_route
