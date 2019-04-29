@@ -215,9 +215,10 @@ class Fill_Out_Personal_Information(Action):
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, 'billing_city'))
         ).send_keys("Ojai")
-        state_list_filter = WebDriverWait(driver, 10).until(
+        for char in "California":
+            state_list_filter = WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH, '//span[@aria-labelledby="select2-billing_state-container"]')))
-        state_list_filter.send_keys("California")
+            state_list_filter.send_keys(char)
         WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.XPATH,
                     '//li[@class="select2-results__option select2-results__option--highlighted"]'))).click()
