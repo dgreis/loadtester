@@ -1,8 +1,8 @@
-from action import Action
+from src.actions.action import Action
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.common.exceptions import WebDriverException
-from settings import variant_list, GA_TRACKING_ID
 
+#TODO: fix this event. It looks broken.
 def ajax_complete(driver):
     try:
         return 0 == driver.execute_script("return jQuery.active")
@@ -24,6 +24,31 @@ class Navigate_To_Landing_Page(Action):
         driver.get(url)
         WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
         self.user.append_to_history(url)
+
+class Navigate_Back(Action):
+
+    name = "Navigate Back"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        driver.back()
+        self.user.append_to_history(driver.current_url)
+
+
+class Leave_Site(Action):
+
+    name = "Leave Site"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        driver.quit()
+
 
 class Determine_Treatment(Action):
 

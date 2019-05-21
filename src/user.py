@@ -1,15 +1,22 @@
 import logging
 
 from selenium import webdriver
-from settings import TLD, variant_list
+import chromedriver_binary
+from settings import SETTINGS
 
 class User:
 
-    def __init__(self,user_id):
+    def __init__(self,user_id, USER_EXPERIMENT_SETTINGS=None,USER_HEADLESS=False):
         self.user_id = user_id
-        self.webdriver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+        if USER_HEADLESS:
+            options.add_argument('headless')
+        else:
+            pass
+        self.webdriver = webdriver.Chrome(chrome_options=options)
         self.webdriver.implicitly_wait(0)
-        self.landing_page = TLD
+        self.landing_page = SETTINGS['TLD']
+        self.USER_EXPERIMENT_SETTINGS = USER_EXPERIMENT_SETTINGS
         self.trtmt = None
         self.log = dict()
         self.log['bounced'] = 0
@@ -18,8 +25,8 @@ class User:
         self.browser_history = list()
 
 
-    def do(self,action):
-        action(self)
+    def do(self,action,**kwargs):
+        action(self,**kwargs)
 
     def output_log(self):
         str_builder = ''
