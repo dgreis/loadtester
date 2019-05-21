@@ -6,9 +6,14 @@ from settings import SETTINGS
 
 class User:
 
-    def __init__(self,user_id, USER_EXPERIMENT_SETTINGS=None):
+    def __init__(self,user_id, USER_EXPERIMENT_SETTINGS=None,USER_HEADLESS=False):
         self.user_id = user_id
-        self.webdriver = webdriver.Chrome()
+        options = webdriver.ChromeOptions()
+        if USER_HEADLESS:
+            options.add_argument('headless')
+        else:
+            pass
+        self.webdriver = webdriver.Chrome(chrome_options=options)
         self.webdriver.implicitly_wait(0)
         self.landing_page = SETTINGS['TLD']
         self.USER_EXPERIMENT_SETTINGS = USER_EXPERIMENT_SETTINGS

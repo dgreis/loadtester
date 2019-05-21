@@ -2,13 +2,15 @@ TLD = "http://localhost.domain:8888/wordpress/shop/"
 GA_TRACKING_ID = "UA-109607513-3"
 TEST = False
 
+USER_HEADLESS = True
+
 EXPERIMENT_ACTIVE = True
 EXPERIMENT_NAME = 'hidden_coupon'
 
 DBC_DATABASE = 'wordpress'
 DBC_UNIX_SOCKET = '/Applications/MAMP/tmp/mysql/mysql.sock'
 
-N = 10
+N = 200
 
 SHOP_SIZE = 18
 BASKETSIZE_LAMBDA = 3
