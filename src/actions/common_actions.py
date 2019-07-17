@@ -1,6 +1,13 @@
+import importlib
+
 from src.actions.action import Action
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+from settings import SETTINGS
+import numpy as np
 
 #TODO: fix this event. It looks broken.
 def ajax_complete(driver):
@@ -9,6 +16,54 @@ def ajax_complete(driver):
     except WebDriverException:
         pass
     #    print "Got here "
+
+class Possibly_Search(Action):
+
+    name = "Possibly Search"
+
+    def __init__(self, user):
+        default_action_route = "No Search"
+        self.action_route = default_action_route
+        #user_override code here
+        if SETTINGS['EXPERIMENT_ACTIVE']:
+            USER_EXPERIMENT_SETTINGS = user.USER_EXPERIMENT_SETTINGS
+            prob = USER_EXPERIMENT_SETTINGS['default']['execute_search']
+            if np.random.uniform(0,1,1) < prob:
+                self.action_route = 'Execute Search'
+        Action.__init__(self, user)
+
+    def _proc(self):
+        #TODO: Possibly sub-class Action with Router?
+        action_route = self.action_route
+        action_class_name = action_route.replace(' ', '_')
+        ecommerce_module = importlib.import_module('src.actions.common_actions')
+        Action_Class = getattr(ecommerce_module,action_class_name)
+        user = self.user
+        user.do(Action_Class)
+
+class Execute_Search(Action):
+
+    name = "Execute Search"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        url = SETTINGS['SEARCH_ENGINE_URL']
+        driver.get(url)
+        campaign_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, "Click Here For Campaign"))
+        )
+        campaign_button.click()
+
+class No_Search(Action):
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        pass
 
 class Navigate_To_Landing_Page(Action):
 

@@ -1,17 +1,16 @@
 TLD = "https://greis-mock-ecom.myshopify.com"
 INVENTORY_URL_PREFIX = '/products/'
 #GA_TRACKING_ID = "UA-109607513-3"
-TEST = True
+TEST = False
 
 USER_HEADLESS = False
 
-EXPERIMENT_ACTIVE = False
-#EXPERIMENT_NAME = 'hidden_coupon'
+EXPERIMENT_ACTIVE = True
+EXPERIMENT_NAME = 'simulate_search'
 
-#DBC_DATABASE = 'wordpress'
-#DBC_UNIX_SOCKET = '/Applications/MAMP/tmp/mysql/mysql.sock'
+SEARCH_ENGINE_URL = "file:///Users/davidgreis/Documents/Personal/Data_Projects/mock-shopify-site/pre.html"
 
-N = 1
+N = 50
 
 SHOP_SIZE = 19
 BASKETSIZE_LAMBDA = 3

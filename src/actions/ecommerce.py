@@ -185,14 +185,15 @@ class Possibly_Redeem_Coupon(Action):
         else:
             self.action_route = default_action_route
         Action.__init__(self, user)
+        self.user.log['variant'] = variant_name
 
     def _det_action(self, variant_info):
         cum = 0
         unif_rv = uniform()
         for k in variant_info:
-            while unif_rv > cum:
-                cum = cum + variant_info[k]
-            break
+            cum = cum + variant_info[k]
+            if unif_rv < cum:
+                break
         return k
 
     def _proc(self):
@@ -212,7 +213,7 @@ class Miss_Coupon(Action):
          Action.__init__(self,user)
 
     def _proc(self):
-        pass
+        self.user.log['action'] = 'Miss Coupon'
 
 class Redeem_Coupon(Action):
 
@@ -235,6 +236,7 @@ class Redeem_Coupon(Action):
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-message'))
         )
+        self.user.log['action'] = "Redeem Coupon"
 
 class Mess_Up_Coupon(Action):
 
@@ -254,6 +256,7 @@ class Mess_Up_Coupon(Action):
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-error'))
         )
+        self.user.log['action'] = "Mess Up Coupon"
 
 class Proceed_To_Checkout(Action):
 

@@ -2,7 +2,8 @@ from src.actions.common_actions import *
 from src.actions.ecommerce import *
 
 
-flow = [  Navigate_To_Landing_Page
+flow = [  Possibly_Search
+        , Navigate_To_Landing_Page
         , Select_Items
         , View_And_Add_Products_To_Cart
         , Proceed_To_Checkout
