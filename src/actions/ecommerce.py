@@ -127,7 +127,10 @@ class Add_Item_To_Cart_From_Product_Page(Action):
 
     def _proc(self):
         driver = self.user.webdriver
-        add_to_cart_btn = driver.find_element_by_name(SETTINGS['ADD_TO_CART_TEXT'])
+        add_to_cart_btn = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((SETTINGS['ADD_TO_CART_BY'],
+                                            SETTINGS['ADD_TO_CART_TEXT'])
+                                           ))
         add_to_cart_btn.click()
         pass
 
@@ -268,6 +271,7 @@ class Proceed_To_Checkout(Action):
 
     def _proc(self):
         driver = self.user.webdriver
+        time.sleep(1)
         checkout_link_element  = WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((SETTINGS['CHECKOUT_ELEMENT_BY'],
                                             SETTINGS['CHECKOUT_ELEMENT_TEXT'])))
@@ -394,11 +398,11 @@ class Place_Order(Action):
 
     def _proc(self):
         driver = self.user.webdriver
+        time.sleep(1)
         WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.ID, SETTINGS['PLACE_ORDER_BUTTON_ID']))
         ).click()
         self.user.log['purchase_executed'] = 1
-
 
 class Leave_After_Confirmation(Action):
 
