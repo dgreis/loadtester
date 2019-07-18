@@ -129,6 +129,7 @@ class Add_Item_To_Cart_From_Product_Page(Action):
         driver = self.user.webdriver
         add_to_cart_btn = driver.find_element_by_name(SETTINGS['ADD_TO_CART_TEXT'])
         add_to_cart_btn.click()
+        pass
 
 class View_And_Add_Products_To_Cart(Action):
 

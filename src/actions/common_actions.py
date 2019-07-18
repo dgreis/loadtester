@@ -9,6 +9,10 @@ from selenium.webdriver.common.by import By
 from settings import SETTINGS
 import numpy as np
 
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+
+
 #TODO: fix this event. It looks broken.
 def ajax_complete(driver):
     try:
@@ -77,8 +81,22 @@ class Navigate_To_Landing_Page(Action):
         driver = self.user.webdriver
         url = self.user.landing_page
         driver.get(url)
-        WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
+        #WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
         self.user.append_to_history(url)
+
+class Click_Through_GTM_Preview_Mode(Action):
+
+    name = "Click Through GTM Preview Mode"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+
+    def _proc(self):
+        driver = self.user.webdriver
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.LINK_TEXT, 'https://ordering.app/daviddoesdata/'))
+        ).click()
 
 class Navigate_Back(Action):
 
