@@ -1,6 +1,6 @@
 from action import Action
 from common_actions import ajax_complete, Navigate_Back
-from helpers import DB
+from helpers import Container
 from utils import get_args
 
 from scipy.stats import poisson
@@ -17,6 +17,18 @@ from selenium.common.exceptions import WebDriverException, TimeoutException, NoS
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+
+PERSONAL_INFO = {
+    'First Name': 'John',
+    'Last Name': 'Doe',
+    'Street': '14 Gundawara St',
+    'City': 'Point Cook',
+    'State': 'Victoria',
+    'Country': 'Australia',
+    'Zip': '2229',
+    'Phone': '8884852895',
+    'Email': 'sample@email.com'
+}
 
 
 class Select_Items(Action):
@@ -44,10 +56,10 @@ class Select_Items(Action):
             user_idxs = [int(math.floor(x)) + 1 for x in list(beta.rvs(ALPHA, BETA, size=num_items)*SHOP_SIZE)]
             #self.user.log['items_chosen'] = item_ids
             #self.user.item_ids = item_ids
-            db = DB()
-            PRODUCT_ALIAS_QUERY = SETTINGS['PRODUCT_ALIAS_QUERY']
-            db.execute_query(PRODUCT_ALIAS_QUERY)
-            contents = db.query_contents
+            pb_kwargs = {'_'.join(k.lower().split('_')[1:]) : v for k, v in SETTINGS.items() if k.startswith('PRODUCT')}
+            db = Container(**pb_kwargs)
+            db.gather_contents()
+            contents = db.contents
             product_ids = sorted(contents.iloc[:,0])
             try:
                 user_item_ids = [product_ids[idx] for idx in user_idxs]
@@ -80,7 +92,7 @@ class Navigate_To_Product_Page(Action):
     def _proc(self):
         driver = self.user.webdriver
         product_name = self.product_name
-        url = SETTINGS['TLD'] + '/product/' + product_name
+        url = SETTINGS['TLD'] + SETTINGS['INVENTORY_URL_PREFIX'] + product_name
         driver.get(url)
         WebDriverWait(driver, 10).until(ajax_complete, "Timeout waiting for page to load")
         self.user.append_to_history(url)
@@ -95,11 +107,16 @@ class Update_Quantity_On_Product_Page(Action):
 
     def _proc(self):
         driver = self.user.webdriver
-        quantity_element = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.NAME, "quantity")))
-        quantity_element.clear()
         quantity = self.quantity
-        quantity_element.send_keys(quantity)
+        quantity_element = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((SETTINGS['UPDATE_QUANTITY_BY'],
+                                            SETTINGS['UPDATE_QUANTITY_TEXT']))
+        )
+        if quantity != 1:
+            quantity_element.clear()
+            quantity_element.send_keys(quantity)
+        else:
+            pass
 
 class Add_Item_To_Cart_From_Product_Page(Action):
 
@@ -110,7 +127,7 @@ class Add_Item_To_Cart_From_Product_Page(Action):
 
     def _proc(self):
         driver = self.user.webdriver
-        add_to_cart_btn = driver.find_element_by_name("add-to-cart")
+        add_to_cart_btn = driver.find_element_by_name(SETTINGS['ADD_TO_CART_TEXT'])
         add_to_cart_btn.click()
 
 class View_And_Add_Products_To_Cart(Action):
@@ -123,11 +140,10 @@ class View_And_Add_Products_To_Cart(Action):
     def _proc(self):
         user = self.user
         user_items = user.user_items
-        sub_actions = [ Navigate_To_Product_Page
-                       ,Update_Quantity_On_Product_Page
-                       ,Add_Item_To_Cart_From_Product_Page
-                       ,Navigate_Back
-                      ]
+        sub_action_names = SETTINGS['SEQUENCE_VIEW_ADD_PRODUCTS']
+        sub_actions = list()
+        for sa in sub_action_names:
+            sub_actions.append(eval(sa))
         for id in user_items:
             product_name = user_items[id]['name']
             quantity = user_items[id]['quant']
@@ -169,14 +185,15 @@ class Possibly_Redeem_Coupon(Action):
         else:
             self.action_route = default_action_route
         Action.__init__(self, user)
+        self.user.log['variant'] = variant_name
 
     def _det_action(self, variant_info):
         cum = 0
         unif_rv = uniform()
         for k in variant_info:
-            while unif_rv > cum:
-                cum = cum + variant_info[k]
-            break
+            cum = cum + variant_info[k]
+            if unif_rv < cum:
+                break
         return k
 
     def _proc(self):
@@ -196,7 +213,7 @@ class Miss_Coupon(Action):
          Action.__init__(self,user)
 
     def _proc(self):
-        pass
+        self.user.log['action'] = 'Miss Coupon'
 
 class Redeem_Coupon(Action):
 
@@ -219,6 +236,7 @@ class Redeem_Coupon(Action):
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-message'))
         )
+        self.user.log['action'] = "Redeem Coupon"
 
 class Mess_Up_Coupon(Action):
 
@@ -238,6 +256,7 @@ class Mess_Up_Coupon(Action):
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'woocommerce-error'))
         )
+        self.user.log['action'] = "Mess Up Coupon"
 
 class Proceed_To_Checkout(Action):
 
@@ -249,7 +268,8 @@ class Proceed_To_Checkout(Action):
     def _proc(self):
         driver = self.user.webdriver
         checkout_link_element  = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.LINK_TEXT, "Checkout")))
+                EC.element_to_be_clickable((SETTINGS['CHECKOUT_ELEMENT_BY'],
+                                            SETTINGS['CHECKOUT_ELEMENT_TEXT'])))
         checkout_link_element.click()
         self.user.append_to_history(driver.current_url)
 
@@ -262,45 +282,41 @@ class Fill_Out_Personal_Information(Action):
 
     def _proc(self):
         driver = self.user.webdriver
-        #First Name
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_first_name'))
-        ).send_keys('John')
-        #Last Name
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_last_name'))
-        ).send_keys('Doe')
-        for letter in "United":
+        for field,id_text in SETTINGS['PERSONAL_INFO_ELEMENT_ID_MAP'].items():
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, id_text))
+            ).send_keys(PERSONAL_INFO[field])
+        #Country
+        for letter in PERSONAL_INFO['Country']:
             choose_country = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.CLASS_NAME, 'select2-selection')))
+                    EC.element_to_be_clickable((SETTINGS['BILLING_COUNTRY_BY']
+                                               ,SETTINGS['BILLING_COUNTRY_TEXT'])))
             choose_country.send_keys(letter)
-            driver
-        choose_country.send_keys("  ") #This is a bug. You have to send two spaces to get one
-        for letter in "States":
-            choose_country.send_keys(letter)
+        #choose_country.send_keys("  ") #This is a bug. You have to send two spaces to get one
+        #for letter in "States":
+        #    choose_country.send_keys(letter)
         choose_country.send_keys(Keys.RETURN)
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_address_1'))
-        ).send_keys("426 Evergreen Terrace")
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_city'))
-        ).send_keys("Ojai")
-        for char in "California":
+        #State
+        for char in PERSONAL_INFO['State']:
             state_list_filter = WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH, '//span[@aria-labelledby="select2-billing_state-container"]')))
+                    EC.element_to_be_clickable((SETTINGS['BILLING_STATE_FILTER_BY'],
+                                                SETTINGS['BILLING_STATE_FILTER_TEXT'])))
             state_list_filter.send_keys(char)
         WebDriverWait(driver, 10).until(
-                    EC.element_to_be_clickable((By.XPATH,
-                    '//li[@class="select2-results__option select2-results__option--highlighted"]'))).click()
+                    EC.element_to_be_clickable((SETTINGS['BILLING_STATE_SELECT_BY'],
+                    SETTINGS['BILLING_STATE_SELECT_TEXT']))).click()
+
+class Continue_To_Payment_Method(Action):
+
+    name = "Continue To Payment Method"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_postcode'))
-        ).send_keys("93023")
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_phone'))
-        ).send_keys("8885554582")
-        WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'billing_email'))
-        ).send_keys("sample@email.com")
+                    EC.element_to_be_clickable((By.ID,'continue_button'))).click()
 
 class Fill_Out_Stripe_CC_Details(Action):
 
@@ -339,6 +355,35 @@ class Fill_Out_Stripe_CC_Details(Action):
         ).send_keys('343')
         driver.switch_to.default_content()
 
+class Fill_Out_Bogus_Gateway_Details(Action):
+
+    name = "Execute Bogus Gateway Purchase"
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        driver.switch_to.frame(
+            frame_reference=driver.find_element(By.XPATH, "//iframe[@title='Field container for: Card number']"))
+        WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID,'number'))).send_keys(1)
+        driver.switch_to.default_content()
+        driver.switch_to.frame(
+            frame_reference=driver.find_element(By.XPATH, "//iframe[@title='Field container for: Name on card']"))
+        WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.NAME,'name'))).send_keys('Bogus Gateway')
+        driver.switch_to.default_content()
+        driver.switch_to.frame(
+            frame_reference=driver.find_element(By.XPATH, "//iframe[@title='Field container for: Expiration date (MM / YY)']"))
+        WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID,'expiry'))).send_keys('02/22')
+        driver.switch_to.default_content()
+        driver.switch_to.frame(
+            frame_reference=driver.find_element(By.XPATH, "//iframe[@title='Field container for: Security code']"))
+        WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.ID,'verification_value'))).send_keys('111')
+        driver.switch_to.default_content()
+
 class Place_Order(Action):
 
     name = "Place Order"
@@ -349,7 +394,7 @@ class Place_Order(Action):
     def _proc(self):
         driver = self.user.webdriver
         WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.ID, 'place_order'))
+            EC.element_to_be_clickable((By.ID, SETTINGS['PLACE_ORDER_BUTTON_ID']))
         ).click()
         self.user.log['purchase_executed'] = 1
 
@@ -364,6 +409,6 @@ class Leave_After_Confirmation(Action):
     def _proc(self):
         driver = self.user.webdriver
         WebDriverWait(driver, 10).until(
-            EC.url_contains('order-received')
+            EC.url_contains(SETTINGS['CONFIRMATION_URL_TEXT'])
         )
         self.user.append_to_history(driver.current_url)
