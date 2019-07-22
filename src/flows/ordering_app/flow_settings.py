@@ -6,8 +6,8 @@ TEST = True
 
 USER_HEADLESS = False
 
-EXPERIMENT_ACTIVE = False
-EXPERIMENT_NAME = 'simulate_search'
+EXPERIMENT_ACTIVE = True
+EXPERIMENT_NAME = 'funnel_attrition'
 
 N = 50
 

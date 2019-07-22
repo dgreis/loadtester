@@ -1,4 +1,4 @@
-from action import Action
+from action import Action, Router
 from common_actions import ajax_complete, Navigate_Back
 from helpers import Container
 from utils import get_args
@@ -262,6 +262,13 @@ class Mess_Up_Coupon(Action):
         )
         self.user.log['action'] = "Mess Up Coupon"
 
+class Possibly_Proceed_To_Checkout(Router):
+
+    name = "Possibly Proceed To Checkout"
+
+    def __init__(self, user):
+        Router.__init__(self, user)
+
 class Proceed_To_Checkout(Action):
 
     name = "Proceed To Checkout"
@@ -388,6 +395,13 @@ class Fill_Out_Bogus_Gateway_Details(Action):
         WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable((By.ID,'verification_value'))).send_keys('111')
         driver.switch_to.default_content()
+
+class Possibly_Place_Order(Router):
+
+    name = "Possibly Place Order"
+
+    def __init__(self, user):
+        Router.__init__(self, user)
 
 class Place_Order(Action):
 

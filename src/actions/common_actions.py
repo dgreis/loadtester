@@ -98,6 +98,16 @@ class Click_Through_GTM_Preview_Mode(Action):
             EC.element_to_be_clickable((By.LINK_TEXT, 'https://ordering.app/daviddoesdata/'))
         ).click()
 
+class Bounce(Action):
+
+    name = "Bounce"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        self.user.log['bounced']  = 1
+
 class Navigate_Back(Action):
 
     name = "Navigate Back"
