@@ -9,5 +9,6 @@ flow = [  Navigate_To_Landing_Page,
           Possibly_Adjust_Cart,
           Possibly_Proceed_To_Checkout,
           Possibly_Fill_In_Ordering_App_Payment_Details,
-          Place_Order
-       ]
+          Place_Order,
+          Leave_After_Confirmation
+        ]

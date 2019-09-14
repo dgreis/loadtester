@@ -431,3 +431,4 @@ class Leave_After_Confirmation(Action):
             EC.url_contains(SETTINGS['CONFIRMATION_URL_TEXT'])
         )
         self.user.append_to_history(driver.current_url)
+        time.sleep(1)
