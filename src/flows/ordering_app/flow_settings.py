@@ -1,8 +1,9 @@
 
-TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&gtm_auth=sMsWxuC_QqfE9yMnLo9aSg&gtm_preview=env-78&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fdaviddoesdata%2F"
+#TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&gtm_auth=sMsWxuC_QqfE9yMnLo9aSg&gtm_preview=env-78&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fdaviddoesdata%2F"
+TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&check_preview_status=1&gtm_auth=mvWyCGu2Lp9PiKlMnTlMIw&gtm_preview=env-96&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fdaviddoesdata%2F"
 INVENTORY_URL_PREFIX = '/products/'
 #GA_TRACKING_ID = "UA-109607513-3"
-TEST = True
+TEST = False
 
 USER_HEADLESS = False
 
