@@ -1,21 +1,18 @@
 
-#TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&gtm_auth=sMsWxuC_QqfE9yMnLo9aSg&gtm_preview=env-78&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fdaviddoesdata%2F"
-TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&check_preview_status=1&gtm_auth=mvWyCGu2Lp9PiKlMnTlMIw&gtm_preview=env-96&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fdaviddoesdata%2F"
+TLD = "https://www.googletagmanager.com/start_preview/gtm?uiv2&id=GTM-5VXXQFT&check_preview_status=1&gtm_auth=mvWyCGu2Lp9PiKlMnTlMIw&gtm_preview=env-96&gtm_debug=&url=https%3A%2F%2Fordering.app%2Fjuiceland%2Fadstesting%2F"
 INVENTORY_URL_PREFIX = '/products/'
 #GA_TRACKING_ID = "UA-109607513-3"
-TEST = False
+GTM_PASSTHROUGH_LINK = "https://ordering.app/juiceland/adstesting/"
+TEST = True
 
 USER_HEADLESS = False
 
 EXPERIMENT_ACTIVE = True
 EXPERIMENT_NAME = 'funnel_attrition'
 
-N = 50
+N = 1
 
-MENU_ITEMS = [('SALADS','SOUTH AUSTIN WEDGE'),
-            ('CHICKEN','GRILLED CHICKEN BREAST SANDWICH'),
-            ('DISHES', 'CHICKEN FRIED STEAK')
-            ]
+MENU_ITEMS = [('Test Item','Test Item1')]
 
 USE_ONLY_PRODUCT_IDS = False
 PRODUCT_BACKEND = 'file'

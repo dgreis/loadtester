@@ -4,13 +4,11 @@ USER_EXPERIMENT_SETTINGS = OrderedDict([
     ('default',
      {
          'possibly_add_menu_items_to_cart' :
-             [('add_menu_items_to_cart',0.8),('bounce', 0.2)],
-         'possibly_adjust_cart':
-             [('adjust_cart',0.7), ('bounce', 0.3)],
+             [('add_menu_items_to_cart',1.0),('bounce', 0.0)],
          'possibly_proceed_to_checkout':
-             [('proceed_to_checkout',0.7), ('bounce', 0.3)],
-         'possibly_fill_in_ordering_app_payment_details':
-             [('fill_in_ordering_app_payment_details',0.6),('bounce',0.4)]
+             [('proceed_to_checkout',1.0), ('bounce', 0.0)],
+         'possibly_pay_there_ordering_app':
+             [('pay_there_ordering_app',1.0),('bounce',0.0)]
      }
     )
 ])

@@ -95,7 +95,7 @@ class Click_Through_GTM_Preview_Mode(Action):
     def _proc(self):
         driver = self.user.webdriver
         WebDriverWait(driver,10).until(
-            EC.element_to_be_clickable((By.LINK_TEXT, 'https://ordering.app/daviddoesdata/'))
+            EC.element_to_be_clickable((By.LINK_TEXT, SETTINGS["GTM_PASSTHROUGH_LINK"]))
         ).click()
 
 class Bounce(Action):
