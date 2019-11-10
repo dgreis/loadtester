@@ -40,20 +40,12 @@ class Choose_Item(Action):
         WebDriverWait(driver,10).until(
             EC.presence_of_element_located((By.ID, 'menu-list'))
         )
+        ml = driver.find_element_by_xpath('/html/body/div/div[2]/layout-container/pane-left/div[2]/div/nav/menu-list')
+        ml_root = driver.execute_script('return arguments[0].shadowRoot',ml)
         category_name = self.category_name
-        #driver.refresh()
-        #print "refreshed"
-        # section_header = WebDriverWait(driver, 10).until(
-        #         EC.element_to_be_clickable(('xpath',
-        #                                     "//*[contains(text(), '" + category_name + "')]"))
-        # )
-        section_headers = driver.find_elements_by_class_name("section-title")
-        try:
-            assert len(filter(lambda x: x == category_name, section_headers)) > 0
-        except AssertionError:
-            pass
+        section_headers = ml_root.find_elements_by_class_name("category-name")
+        assert len(filter(lambda x: x.get_attribute('innerText') == category_name, section_headers)) > 0
         section_header = filter(lambda x: x.text == category_name, section_headers)[0]
-        #section_header = driver.find_element_by_xpath("//*[contains(text(), '" + category_name + "')]")
         time.sleep(1.5)
         try:
             section_header.click()
@@ -63,15 +55,10 @@ class Choose_Item(Action):
             driver.execute_script(js, section_header)
         item_name = self.item_name
         time.sleep(1)
-        driver.find_element_by_link_text(item_name).click()
-        section_headers = driver.find_elements_by_class_name("section-title")
-        try:
-            assert len(filter(lambda x: x == category_name, section_headers))
-        except AssertionError:
-            pass
-        section_header = filter(lambda x: x.text == category_name, section_headers)[0]
+        item_divs = ml_root.find_elements_by_class_name("item-name")
+        chosen_item = filter(lambda x: x.get_attribute('innerText') == item_name, item_divs)[0]
         time.sleep(1.5)
-        section_header.click()
+        chosen_item.click()
 
 class Possibly_Add_Menu_Items_To_Cart(Router):
 
