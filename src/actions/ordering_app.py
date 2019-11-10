@@ -1,6 +1,6 @@
 from action import Action, Router
 from common_actions import ajax_complete, Navigate_Back
-from utils import get_args
+from utils import get_args, expand_shadow_node, safe_click
 from ecommerce import Add_Item_To_Cart_From_Product_Page
 
 from scipy.stats import poisson
@@ -14,8 +14,10 @@ import importlib
 from settings import SETTINGS
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import WebDriverException, TimeoutException, \
-    NoSuchElementException, ElementNotVisibleException
+    NoSuchElementException, ElementNotVisibleException, ElementClickInterceptedException, \
+    StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
@@ -49,7 +51,7 @@ class Choose_Item(Action):
         time.sleep(1.5)
         try:
             section_header.click()
-        except ElementNotVisibleException:
+        except ElementClickInterceptedException:
             #js = "var aa=document.getElementById('input-blocker');aa.parentNode.removeChild(aa)"
             js = "arguments[0].click();"
             driver.execute_script(js, section_header)
@@ -58,7 +60,38 @@ class Choose_Item(Action):
         item_divs = ml_root.find_elements_by_class_name("item-name")
         chosen_item = filter(lambda x: x.get_attribute('innerText') == item_name, item_divs)[0]
         time.sleep(1.5)
-        chosen_item.click()
+        try:
+            chosen_item.click()
+        except ElementClickInterceptedException:
+            js = "arguments[0].click();"
+            driver.execute_script(js, chosen_item)
+
+
+class Toa_Add_Item_To_Cart_From_Product_Page(Action):
+
+    name = "Toa Add Item To Cart From Product Page"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((SETTINGS['ADD_TO_CART_BY'],
+                                            SETTINGS['ADD_TO_CART_TEXT'])
+                                           ))
+        len_cart = len(driver.find_elements_by_class_name('cart-item'))
+        shadow_root = expand_shadow_node(driver, driver.find_element(SETTINGS['ADD_TO_CART_BY'],SETTINGS['ADD_TO_CART_TEXT']))
+        item_form_submit_button = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('item-form-submit-button'))
+        action_button = expand_shadow_node(driver, item_form_submit_button.find_element_by_tag_name('action-button'))
+        add_button = action_button.find_element_by_class_name('button')
+        safe_click(driver, add_button)
+        time.sleep(1.5)
+        try:
+            assert len(driver.find_elements_by_class_name('cart-item')) > len_cart
+        except AssertionError:
+            assert 1 == 0
+
 
 class Possibly_Add_Menu_Items_To_Cart(Router):
 
@@ -77,7 +110,7 @@ class Add_Menu_Items_To_Cart(Action):
     def _proc(self):
         user = self.user
         sub_actions = [Choose_Item,
-                       Add_Item_To_Cart_From_Product_Page]
+                       Toa_Add_Item_To_Cart_From_Product_Page]
         menu_items = SETTINGS['MENU_ITEMS']
         for cat_item in menu_items:
             category_name = cat_item[0]
@@ -101,12 +134,45 @@ class Adjust_Cart(Action):
     def __init__(self, user):
         Action.__init__(self, user)
 
+    def _proc(self):
+        driver = self.user.webdriver
+        for i in range(4):
+            shadow_root = expand_shadow_node(driver,driver.find_elements_by_class_name('cart-item')[0].find_element_by_tag_name('cart-action-buttons'))
+            quantity_widget = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('quantity-widget'))
+            increment_button = quantity_widget.find_element_by_class_name('increment')
+            safe_click(driver, increment_button)
+            time.sleep(1.5)
+        #driver.find_elements_by_class_name('cart-item')[2].send_keys("Remove")
+        shadow_root = expand_shadow_node(driver,driver.find_elements_by_class_name('cart-item')[2].find_element_by_tag_name('cart-action-buttons'))
+        trash_element = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('trash-svg'))
+        trash_svg = trash_element.find_element_by_tag_name('svg')
+        actions = ActionChains(driver)
+        actions.click(trash_svg).perform()
+
+class Possibly_Toa_Proceed_To_Checkout(Router):
+
+    name = "Possibly TOA Proceed To Checkout"
+
+    def __init__(self, user):
+        Router.__init__(self, user)
+
+class Toa_Proceed_To_Checkout(Action):
+
+    name = "Toa_Proceed To Checkout"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
 
     def _proc(self):
         driver = self.user.webdriver
-        driver.find_elements_by_class_name('cart-qty')[0].send_keys(5)
         time.sleep(1)
-        driver.find_elements_by_class_name('cart-qty')[2].send_keys("Remove")
+        checkout_root  = expand_shadow_node(driver,WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((SETTINGS['CHECKOUT_ELEMENT_BY'],
+                                            SETTINGS['CHECKOUT_ELEMENT_TEXT']))))
+        action_button_div = expand_shadow_node(driver, checkout_root.find_element_by_tag_name('action-button'))
+        button = action_button_div.find_element_by_class_name('button')
+        safe_click(driver, button)
+        self.user.append_to_history(driver.current_url)
 
 class Possibly_Fill_In_Ordering_App_Payment_Details(Router):
 

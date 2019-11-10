@@ -1,6 +1,7 @@
 import importlib
 import inspect
 from settings import SETTINGS
+from selenium.common.exceptions import ElementClickInterceptedException
 
 def init_settings():
     FLOW_NAME = SETTINGS['FLOW_NAME']
@@ -27,3 +28,14 @@ def get_args( class_, method):
     target = getattr(class_,method)
     args = getattr(inspect.getargspec(target),'args')
     return args[1:]
+
+def expand_shadow_node(driver, shadow_node):
+    shadow_root = driver.execute_script('return arguments[0].shadowRoot', shadow_node)
+    return shadow_root
+
+def safe_click(driver, element):
+    try:
+        element.click()
+    except ElementClickInterceptedException:
+        js = "arguments[0].click();"
+        driver.execute_script(js, element)
