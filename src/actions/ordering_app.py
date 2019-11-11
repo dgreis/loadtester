@@ -82,15 +82,21 @@ class Toa_Add_Item_To_Cart_From_Product_Page(Action):
                                            ))
         len_cart = len(driver.find_elements_by_class_name('cart-item'))
         shadow_root = expand_shadow_node(driver, driver.find_element(SETTINGS['ADD_TO_CART_BY'],SETTINGS['ADD_TO_CART_TEXT']))
-        item_form_submit_button = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('item-form-submit-button'))
-        action_button = expand_shadow_node(driver, item_form_submit_button.find_element_by_tag_name('action-button'))
-        add_button = action_button.find_element_by_class_name('button')
-        safe_click(driver, add_button)
-        time.sleep(1.5)
         try:
-            assert len(driver.find_elements_by_class_name('cart-item')) > len_cart
-        except AssertionError:
-            assert 1 == 0
+            item_form_submit_button = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('item-form-submit-button'))
+            action_button = expand_shadow_node(driver, item_form_submit_button.find_element_by_tag_name('action-button'))
+            add_button = action_button.find_element_by_class_name('button')
+            safe_click(driver, add_button)
+        except StaleElementReferenceException:
+            shadow_root = expand_shadow_node(driver, driver.find_element(SETTINGS['ADD_TO_CART_BY'], SETTINGS['ADD_TO_CART_TEXT']))
+            item_form_submit_button = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('item-form-submit-button'))
+            action_button = expand_shadow_node(driver, item_form_submit_button.find_element_by_tag_name('action-button'))
+            add_button = action_button.find_element_by_class_name('button')
+            safe_click(driver, add_button)
+        #try:
+        #    assert len(driver.find_elements_by_class_name('cart-item')) > len_cart
+        #except AssertionError:
+        #    assert 1 == 0
 
 
 class Possibly_Add_Menu_Items_To_Cart(Router):
@@ -240,10 +246,31 @@ class Pay_There_Ordering_App(Action):
     def _proc(self):
         driver = self.user.webdriver
         for field,id_text in SETTINGS['PERSONAL_INFO_ELEMENT_ID_MAP'].items():
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.NAME,id_text))
-            ).send_keys(PERSONAL_INFO[field])
-        radio_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'pay_online_False'))
-        )
-        driver.execute_script("arguments[0].click();", radio_button)
+            checkout_form = expand_shadow_node(driver, WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, 'checkout-form'))
+            ))
+            checkout_form.find_element_by_id(id_text).send_keys(PERSONAL_INFO[field])
+        checkout_form = expand_shadow_node(driver, WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, 'checkout-form'))
+        ))
+        action_button = expand_shadow_node(driver, checkout_form.find_elements('tag name','action-button')[1])
+        pay_there_button = action_button.find_element_by_class_name('button')
+        safe_click(driver, pay_there_button)
+
+class Toa_Place_Order(Action):
+
+    name = "Toa Place Order"
+
+    def __init__(self, user):
+        Action.__init__(self, user)
+
+    def _proc(self):
+        driver = self.user.webdriver
+        time.sleep(1)
+        checkout_form = expand_shadow_node(driver, WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.ID, 'checkout-form'))))
+        action_button = expand_shadow_node(driver, checkout_form.find_element_by_id('send-button-wrapper').find_element_by_tag_name('action-button'))
+        send_button = action_button.find_element_by_class_name('button')
+        safe_click(driver, send_button)
+
+        self.user.log['purchase_executed'] = 1

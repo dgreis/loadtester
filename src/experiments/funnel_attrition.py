@@ -9,8 +9,8 @@ USER_EXPERIMENT_SETTINGS = OrderedDict([
              [('adjust_cart',1.0), ('bounce', 0.0)],
          'possibly_toa_proceed_to_checkout':
              [('toa_proceed_to_checkout',1.0), ('bounce', 0.0)],
-         'possibly_fill_in_ordering_app_payment_details':
-             [('fill_in_ordering_app_payment_details',1.0),('bounce',0.0)]
+         'possibly_pay_there_ordering_app':
+             [('pay_there_ordering_app',1.0),('bounce',0.0)]
      }
     )
 ])

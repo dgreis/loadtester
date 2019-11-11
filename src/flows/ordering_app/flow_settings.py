@@ -38,9 +38,9 @@ CHECKOUT_ELEMENT_BY = 'tag name'
 CHECKOUT_ELEMENT_TEXT = "cart-checkout-total"
 
 PERSONAL_INFO_ELEMENT_ID_MAP = {
-     'Name': 'customer_name',
-     'Phone Number': 'customer_phone',
-     'Email': 'customer_email'
+     'Name': 'customer-name',
+     'Phone Number': 'customer-phone',
+     'Email': 'customer-email'
 }
 
 
