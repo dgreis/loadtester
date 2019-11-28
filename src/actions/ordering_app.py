@@ -59,13 +59,12 @@ class Choose_Item(Action):
         time.sleep(1)
         item_divs = ml_root.find_elements_by_class_name("item-name")
         chosen_item = filter(lambda x: x.get_attribute('innerText') == item_name, item_divs)[0]
-        time.sleep(1.5)
         try:
             chosen_item.click()
         except ElementClickInterceptedException:
             js = "arguments[0].click();"
             driver.execute_script(js, chosen_item)
-
+        time.sleep(1.5)
 
 class Toa_Add_Item_To_Cart_From_Product_Page(Action):
 
@@ -97,7 +96,6 @@ class Toa_Add_Item_To_Cart_From_Product_Page(Action):
         #    assert len(driver.find_elements_by_class_name('cart-item')) > len_cart
         #except AssertionError:
         #    assert 1 == 0
-
 
 class Possibly_Add_Menu_Items_To_Cart(Router):
 
@@ -148,12 +146,13 @@ class Adjust_Cart(Action):
             increment_button = quantity_widget.find_element_by_class_name('increment')
             safe_click(driver, increment_button)
             time.sleep(1.5)
-        #driver.find_elements_by_class_name('cart-item')[2].send_keys("Remove")
+        #Below code actually isn't working
         shadow_root = expand_shadow_node(driver,driver.find_elements_by_class_name('cart-item')[2].find_element_by_tag_name('cart-action-buttons'))
         trash_element = expand_shadow_node(driver, shadow_root.find_element_by_tag_name('trash-svg'))
         trash_svg = trash_element.find_element_by_tag_name('svg')
         actions = ActionChains(driver)
         actions.click(trash_svg).perform()
+        pass
 
 class Possibly_Toa_Proceed_To_Checkout(Router):
 
